@@ -7,7 +7,14 @@ use humantime_serde;
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Request{
     #[serde(rename = "type")]
-    Type: String,
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase")]
+enum RequestType {
+    Success,
+    Fail,
+}
+
+    request_type: RequestType,
 
     stream: Stream,
     gifts: Vec<Gifts>,
