@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
+use url::Url;
 use std::time::Duration;
 use uuid::Uuid;
 use humantime_serde;
@@ -19,7 +20,7 @@ struct Stream{
     user_id: Uuid,
     is_private: bool,
     settings: u32, 
-    shard_url: String,
+    shard_url: Url,
     public_tariff: Public_tariff,
     private_tariff: Private_tariff
 }

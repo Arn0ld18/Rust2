@@ -14,17 +14,24 @@ struct Cli {
     command: Commands,
 }
 
+// A set of commands for managing items.
 #[derive(Subcommand)]
 enum Commands {
+    /// Add a new item.
     Add {
+        /// The name of the item to add.
         #[arg(long)]
         name: String,
     },
+    /// Read (view) an existing item.
     Read {
+        /// The name of the item to read.
         #[arg(long)]
         name: String,
     },
+    /// Delete an existing item.
     Delete {
+        /// The name of the item to delete.
         #[arg(long)]
         name: String,
     },
@@ -76,4 +83,8 @@ pub fn part3() {
             }
         }
     }
+}
+
+fn main(){
+    part3();
 }
