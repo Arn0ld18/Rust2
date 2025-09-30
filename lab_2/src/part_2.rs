@@ -6,20 +6,20 @@ use uuid::Uuid;
 use humantime_serde;
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct Request{
-    #[serde(rename = "type")]
-#[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
-enum RequestType {
+pub enum RequestType {
     Success,
     Fail,
 }
 
-    request_type: RequestType,
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Request {
+    #[serde(rename = "type")]
+    pub request_type: RequestType,
 
-    stream: Stream,
-    gifts: Vec<Gifts>,
-    debug: Debug
+    pub stream: Stream,
+    pub gifts: Vec<Gifts>,
+    pub debug: Debug,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
