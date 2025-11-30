@@ -1,8 +1,8 @@
-use assert_cmd::Command;
+use assert_cmd::cargo::cargo_bin_cmd;
 use mockito::Server;
 use predicates::str::contains;
-use url::Url;
 use std::env;
+use url::Url;
 
 #[test]
 fn download_snippet_via_url() {
@@ -12,7 +12,8 @@ fn download_snippet_via_url() {
 
     let mut server = Server::new();
 
-    let mock = server.mock("GET", "/snippet")
+    let mock = server
+        .mock("GET", "/snippet")
         .with_status(200)
         .with_body("from_mock")
         .create();
@@ -20,7 +21,7 @@ fn download_snippet_via_url() {
     let url = format!("{}/snippet", server.url());
     let url = Url::parse(&url).unwrap();
 
-    Command::cargo_bin("snippet").unwrap()
+    cargo_bin_cmd!("snippet")
         .args(["add", "--name", "mocked", "--download"])
         .arg(url.to_string())
         .assert()

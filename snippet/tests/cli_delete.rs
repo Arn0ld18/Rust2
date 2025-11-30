@@ -1,4 +1,4 @@
-use assert_cmd::Command;
+use assert_cmd::cargo::cargo_bin_cmd;
 use predicates::str::contains;
 use std::env;
 
@@ -8,13 +8,13 @@ fn cli_delete() {
         env::set_var("SNIPPETS_APP_STORAGE", "JSON:tests_snippets.json");
     }
 
-    Command::cargo_bin("snippet").unwrap()
+    cargo_bin_cmd!("snippet")
         .args(["add", "--name", "to_del"])
         .write_stdin("zzz")
         .assert()
         .success();
 
-    Command::cargo_bin("snippet").unwrap()
+    cargo_bin_cmd!("snippet")
         .args(["delete", "--name", "to_del"])
         .assert()
         .success()

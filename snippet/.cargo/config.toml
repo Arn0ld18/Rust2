@@ -1,0 +1,6 @@
+[build]
+rustflags = [
+    "-Dclippy::missing_panics_doc",
+    "-Dclippy::clone_on_ref_ptr",
+    "-Dclippy::similar_names"
+]

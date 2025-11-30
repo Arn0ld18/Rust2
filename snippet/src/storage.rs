@@ -1,28 +1,38 @@
+use crate::error::AppError;
 use crate::models::Snippet;
-use rusqlite::{params, Connection};
+use chrono::{DateTime, Utc};
+use rusqlite::{Connection, params};
 use std::collections::HashMap;
 use std::env;
 use std::fs;
 use std::path::Path;
-use crate::error::AppError;
-use chrono::{DateTime, Utc};
 
 // ------------------ STORAGE TRAIT ------------------
+/// Storage backend for managing snippets.
 pub trait SnippetStorage {
+    /// Loads all snippets from storage.
     fn load_all(&self) -> Result<HashMap<String, Snippet>, AppError>;
+    /// Saves the entire snippet collection.
     fn save_all(&self, data: &HashMap<String, Snippet>) -> Result<(), AppError>;
+    /// Removes a single snippet by name.
     fn delete(&self, name: &str) -> Result<(), AppError>;
 }
 // ------------------ JSON STORAGE ------------------
+
+/// JSON file–based implementation of [`SnippetStorage`].
 pub struct JsonStorage {
     path: String,
 }
 
 impl JsonStorage {
-    pub fn new(path: String) -> Self { Self { path } }
+    /// Creates a new JSON storage with file path.
+    pub fn new(path: String) -> Self {
+        Self { path }
+    }
 }
 
 impl JsonStorage {
+    /// Load all data.
     pub fn load_all(&self) -> Result<HashMap<String, Snippet>, AppError> {
         if Path::new(&self.path).exists() {
             let data = fs::read_to_string(&self.path)?;
@@ -32,13 +42,13 @@ impl JsonStorage {
             Ok(HashMap::new())
         }
     }
-
+    /// Save all data.
     pub fn save_all(&self, data: &HashMap<String, Snippet>) -> Result<(), AppError> {
         let json = serde_json::to_string_pretty(data)?;
         fs::write(&self.path, json)?;
         Ok(())
     }
-
+    /// Delete by name.
     pub fn delete(&self, name: &str) -> Result<(), AppError> {
         let mut all = self.load_all()?;
         all.remove(name);
@@ -71,13 +81,17 @@ impl SnippetStorage for JsonStorage {
     }
 }
 
-
 // ------------------ SQLITE STORAGE ------------------
+/// SQLite-based implementation of [`SnippetStorage`].
 pub struct SqliteStorage {
     path: String,
 }
 
 impl SqliteStorage {
+    /// Creates a new SQLite storage and initializes schema.
+    ///
+    /// # Errors
+    /// Returns `AppError` if the database file cannot be created or schema creation fails.
     pub fn new(path: String) -> Result<Self, AppError> {
         let storage = Self { path };
         storage.init_db()?;
@@ -111,7 +125,6 @@ impl SnippetStorage for SqliteStorage {
             Ok((name, Snippet { code, created_at }))
         })?;
 
-
         let mut map = HashMap::new();
         for r in rows {
             let (name, snippet) = r?;
@@ -139,12 +152,17 @@ impl SnippetStorage for SqliteStorage {
     }
 }
 
-
 // ------------------ STORAGE SELECTOR ------------------
 
+/// Selects storage backend from `SNIPPETS_APP_STORAGE`.
+///
+/// Format: `JSON:path` or `SQLITE:path`.
+///
+/// # Errors
+/// Returns `InvalidStorage` if the variable format is wrong or SQLite fails.
 pub fn get_storage() -> Result<Box<dyn SnippetStorage>, AppError> {
-    let env_var = env::var("SNIPPETS_APP_STORAGE")
-        .unwrap_or_else(|_| "JSON:snippets.json".to_string());
+    let env_var =
+        env::var("SNIPPETS_APP_STORAGE").unwrap_or_else(|_| "JSON:snippets.json".to_string());
     let parts: Vec<&str> = env_var.split(':').collect();
     if parts.len() != 2 {
         return Err(AppError::InvalidStorage(env_var));
@@ -156,4 +174,3 @@ pub fn get_storage() -> Result<Box<dyn SnippetStorage>, AppError> {
         _ => Err(AppError::InvalidStorage(parts[0].to_string())),
     }
 }
-

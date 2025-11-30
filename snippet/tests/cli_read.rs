@@ -1,4 +1,4 @@
-use assert_cmd::Command;
+use assert_cmd::cargo::cargo_bin_cmd;
 use predicates::str::contains;
 use std::env;
 
@@ -8,13 +8,13 @@ fn cli_read_existing() {
         env::set_var("SNIPPETS_APP_STORAGE", "JSON:tests_snippets.json");
     }
 
-    Command::cargo_bin("snippet").unwrap()
+    cargo_bin_cmd!("snippet")
         .args(["add", "--name", "x"])
         .write_stdin("aaa")
         .assert()
         .success();
 
-    Command::cargo_bin("snippet").unwrap()
+    cargo_bin_cmd!("snippet")
         .args(["read", "--name", "x"])
         .assert()
         .success()

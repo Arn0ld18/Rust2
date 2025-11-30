@@ -1,4 +1,4 @@
-use assert_cmd::Command;
+use assert_cmd::cargo::cargo_bin_cmd;
 use predicates::str::contains;
 use std::env;
 
@@ -9,27 +9,27 @@ fn full_flow() {
     }
 
     // ADD
-    Command::cargo_bin("snippet").unwrap()
+    cargo_bin_cmd!("snippet")
         .args(["add", "--name", "flow"])
         .write_stdin("abc")
         .assert()
         .success();
 
     // READ
-    Command::cargo_bin("snippet").unwrap()
+    cargo_bin_cmd!("snippet")
         .args(["read", "--name", "flow"])
         .assert()
         .success()
         .stdout(contains("abc"));
 
     // DELETE
-    Command::cargo_bin("snippet").unwrap()
+    cargo_bin_cmd!("snippet")
         .args(["delete", "--name", "flow"])
         .assert()
         .success();
 
     // READ FAIL
-    Command::cargo_bin("snippet").unwrap()
+    cargo_bin_cmd!("snippet")
         .args(["read", "--name", "flow"])
         .assert()
         .failure();
