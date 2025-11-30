@@ -14,10 +14,12 @@ pub enum AppError {
     #[error("Date parse error: {0}")]
     DateParse(#[from] chrono::ParseError),
 
+    #[error("Reqwest error: {0}")]
+    Reqwest(#[from] reqwest::Error),
+
     #[error("Snippet '{0}' not found")]
     NotFound(String),
 
     #[error("Invalid storage configuration: {0}")]
     InvalidStorage(String),
 }
-
