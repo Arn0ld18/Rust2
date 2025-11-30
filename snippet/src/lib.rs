@@ -11,6 +11,18 @@
 //! deleting, and downloading small code snippets using JSON or SQLite
 //! storage backends.
 
+/// Declarative macro to create BTreeMap easily.
+#[macro_export]
+macro_rules! btreemap {
+    ($( $key:expr => $value:expr ),* $(,)?) => {{
+        let mut map = std::collections::BTreeMap::new();
+        $(
+            map.insert($key, $value);
+        )*
+        map
+    }};
+}
+
 /// Command-line interface definitions and argument parsing.
 pub mod cli;
 
