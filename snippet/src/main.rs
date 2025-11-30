@@ -2,8 +2,10 @@ mod cli;
 mod models;
 mod storage;
 mod app;
+mod error;
 
 fn main() {
-    app::run();
-
+    if let Err(e) = app::run() {
+        eprintln!("Error: {}", e);
+    }
 }
